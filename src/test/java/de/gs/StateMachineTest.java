@@ -7,24 +7,24 @@ public class StateMachineTest {
 
     @Test
     public void testInitialStateTransition() {
-        GameState init = new GameState("INIT");
-        GameState next = new GameState("NEXT");
-        GameContext ctx = new GameContext();
-        init.addTransition(new Transition(next, c -> true));
-        StateMachine sm = new StateMachine(init, ctx);
+        var initState = GameState.INIT;
+        var nextState = GameState.NEXT;
+        var ctx = new GameContext();
+        initState.addTransition(new Transition(nextState, c -> true));
+        StateMachine sm = new StateMachine(initState, ctx);
 
-        assertEquals("INIT", sm.getCurrentState().getName());
+        assertEquals(GameState.INIT, sm.getCurrentState().getName());
         assertTrue(sm.next());
-        assertEquals("NEXT", sm.getCurrentState().getName());
+        assertEquals(GameState.NEXT, sm.getCurrentState().getName());
     }
 
     @Test
     public void testBlockedTransition() {
-        GameState init = new GameState("INIT");
-        GameState next = new GameState("NEXT");
+        var initState = GameState.INIT;
+        var nextState = GameState.NEXT;
         GameContext ctx = new GameContext();
-        init.addTransition(new Transition(next, c -> false));
-        StateMachine sm = new StateMachine(init, ctx);
+        initState.addTransition(new Transition(nextState, c -> false));
+        StateMachine sm = new StateMachine(initState, ctx);
 
         assertFalse(sm.next());
         assertEquals("INIT", sm.getCurrentState().getName());

@@ -1,36 +1,40 @@
 package de.gs;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Main {
 
     public static void main(String[] args) {
-        GameState init = new GameState("INIT");
-        GameState deal = new GameState("DEAL_CARDS");
-        GameState turn = new GameState("PLAYER_TURN");
-        GameState evaluate = new GameState("EVALUATE");
-        GameState end = new GameState("END");
 
-        init.addTransition(new Transition(deal, ctx -> true));
-        deal.addTransition(new Transition(turn, ctx -> true));
-        turn.addTransition(new Transition(evaluate, ctx -> true));
-        evaluate.addTransition(new Transition(turn, ctx -> ctx.playerMadeMistake));
-        evaluate.addTransition(new Transition(end, ctx -> ctx.round >= 24));
-        evaluate.addTransition(new Transition(turn, ctx -> ctx.round < 24 && !ctx.playerMadeMistake));
+        var initState = GameState.INIT;
+        var dealCardsState = GameState.DEAL_CARDS;
+        var turnPlayerState = GameState.PLAYER_TURN;
+        var evaluateTurnState = GameState.EVALUATE;
+        var endState = GameState.END;
 
-        GameContext context = new GameContext();
-        StateMachine sm = new StateMachine(init, context);
+        initState.addTransition(new Transition(dealCardsState, ctx -> true));
+        dealCardsState.addTransition(new Transition(turnPlayerState, ctx -> true));
+        turnPlayerState.addTransition(new Transition(evaluateTurnState, ctx -> true));
+        evaluateTurnState.addTransition(new Transition(turnPlayerState, ctx -> ctx.playerMadeMistake));
+        evaluateTurnState.addTransition(new Transition(endState, ctx -> ctx.round >= 24));
+        evaluateTurnState.addTransition(new Transition(turnPlayerState, ctx -> ctx.round < 24 && !ctx.playerMadeMistake));
 
-        while (!sm.getCurrentState().getName().equals("END")) {
-            System.out.println("Aktueller Zustand: " + sm.getCurrentState());
+        var context = new GameContext();
+        var stateMachine = new StateMachine(initState, context);
+
+        while (stateMachine.getCurrentState() != GameState.END) {
+            log.info("Aktueller Zustand: " + stateMachine.getCurrentState());
 
             context.round++;
             context.playerMadeMistake = context.round == 10;
 
-            if (!sm.next()) {
-                System.out.println("Kein gültiger Übergang möglich!");
+            if (!stateMachine.next()) {
+                log.info("Kein gültiger Übergang möglich");
                 break;
             }
         }
 
-        System.out.println("Spiel beendet nach " + context.round + " Runden.");
+        log.info("Spiel beendet nach " + context.round + " Runden.");
     }
 }

@@ -1,6 +1,9 @@
 package de.gs;
 
+import lombok.Getter;
+
 public class StateMachine {
+    @Getter
     private GameState currentState;
     private final GameContext context;
 
@@ -10,16 +13,13 @@ public class StateMachine {
     }
 
     public boolean next() {
-        for (Transition t : currentState.getTransitions()) {
-            if (t.isAllowed(context)) {
-                currentState = t.getTargetState();
+        for (Transition transition : currentState.getTransitions()) {
+            if (transition.isAllowed(context)) {
+                currentState = transition.getTargetState();
                 return true;
             }
         }
         return false;
     }
 
-    public GameState getCurrentState() {
-        return currentState;
-    }
 }

@@ -3,13 +3,15 @@ package de.gs;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameState {
-    private final String name;
-    private final List<Transition> transitions = new ArrayList<>();
+public enum GameState {
+    INIT,
+    NEXT,
+    DEAL_CARDS,
+    PLAYER_TURN,
+    EVALUATE,
+    END;
 
-    public GameState(String name) {
-        this.name = name;
-    }
+    private final List<Transition> transitions = new ArrayList<>();
 
     public void addTransition(Transition transition) {
         transitions.add(transition);
@@ -20,11 +22,11 @@ public class GameState {
     }
 
     public String getName() {
-        return name;
+        return this.name();
     }
 
     @Override
     public String toString() {
-        return name;
+        return this.name();
     }
 }

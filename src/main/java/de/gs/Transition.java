@@ -1,8 +1,11 @@
 package de.gs;
 
+import lombok.Getter;
+
 import java.util.function.Predicate;
 
 public class Transition {
+    @Getter
     private final GameState targetState;
     private final Predicate<GameContext> condition;
 
@@ -15,7 +18,4 @@ public class Transition {
         return condition == null || condition.test(context);
     }
 
-    public GameState getTargetState() {
-        return targetState;
-    }
 }
