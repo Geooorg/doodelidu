@@ -7,7 +7,7 @@ public enum Color {
     public String getUtf8Name() {
         return switch (this) {
             case GREEN -> "🟩";
-            case PINK -> "🩷";
+            case PINK -> "🟥";
             case YELLOW -> "🟨";
         };
     }

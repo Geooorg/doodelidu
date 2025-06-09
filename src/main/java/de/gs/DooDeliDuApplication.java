@@ -3,7 +3,6 @@ package de.gs;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Stack;
 
 @Slf4j
 public class DooDeliDuApplication {
@@ -18,9 +17,9 @@ public class DooDeliDuApplication {
 
     public void startGame() {
 
-        var playerA = new Player("A", new Stack<>());
-        var playerB = new Player("B", new Stack<>());
-        var playerC = new Player("C", new Stack<>());
+        var playerA = new Player("A");
+        var playerB = new Player("B");
+        var playerC = new Player("C");
 
         this.context = new GameContext(new PlayersRing(List.of(playerA, playerB, playerC)));
         context.setCurrentPlayer(playerA);

@@ -25,11 +25,11 @@ public class GameController {
     }
 
     public void nextState() {
-        log.info("\nCurrent State: {}", currentState);
+        log.debug("Current State: {}\n", currentState);
 
         switch (currentState) {
             case INIT:
-                log.info("Generating cards");
+                log.info("Shuffling cards");
                 var cards = generateRandomCardDeck(NUMBER_OF_CARDS);
                 context.setCards(cards);
                 currentState = State.DISTRIBUTE_CARDS;
@@ -45,7 +45,7 @@ public class GameController {
                 var nextPlayer = context.getPlayers().next();
                 context.setCurrentPlayer(nextPlayer);
 
-                log.info("Player {} - {} cards left", nextPlayer.name(), nextPlayer.cards().size());
+                log.debug("Player {} - {} cards left", nextPlayer.getName(), nextPlayer.getCards().size());
                 playCard();
                 currentState = State.EVALUATE;
                 break;
@@ -58,7 +58,7 @@ public class GameController {
             case END:
                 log.info("======== Game ended ===========");
                 var winner = determineWinner();
-                log.info("Player {} won the game", winner.name());
+                log.info("🏆 Player {} won the game! 🏆", winner.getName());
                 break;
         }
     }
@@ -66,14 +66,15 @@ public class GameController {
 
     private void playCard() {
         var player = context.getCurrentPlayer();
-        var card = player.cards().pop();
+        var card = player.getCards().pop();
         context.getPlayedCards().remove(player);
         context.getPlayedCards().put(player, card);
-        log.info("Player {} played card {}", player.name(), card);
+
+        log.info("Player {} played card {}", player.getName(), card);
     }
 
     private boolean anyPlayerHasCardsLeft() {
-        return context.getPlayers().getAllPlayers().stream().anyMatch(player -> !player.cards().isEmpty());
+        return context.getPlayers().getAllPlayers().stream().anyMatch(player -> !player.getCards().isEmpty());
     }
 
     private void distributeCards() {
@@ -82,21 +83,21 @@ public class GameController {
 
         while (!cards.isEmpty()) {
             var card = cards.pop();
-            players.getCurrentPlayer().cards().push(card);
+            players.getCurrentPlayer().getCards().push(card);
             players.next();
         }
 
         log.info("Cards distributed");
         for (var player : players.getAllPlayers()) {
-            log.info("Player {} has {} cards", player.name(), player.cards().size());
+            log.info("Player {} has {} cards", player.getName(), player.getCards().size());
         }
     }
 
     private void evaluateTurn() {
-        log.info("Evaluating turn");
+        log.debug("Evaluating turn");
         var cardsOnTable = context.getPlayedCards();
         var evaluator = new CardEvaluator();
-        var result = evaluator.evaluatePlayedCards(cardsOnTable, context.getPlayers().size());
+        var result = evaluator.evaluatePlayedCards(cardsOnTable);
 
         log.info("What to say: {}", result.whatToSay());
     }
@@ -119,7 +120,7 @@ public class GameController {
 
     private Player determineWinner() {
         return context.getPlayers().getAllPlayers().stream()
-                .filter(player -> player.cards()
+                .filter(player -> player.getCards()
                 .isEmpty()).findFirst().orElseThrow();
 
     }
