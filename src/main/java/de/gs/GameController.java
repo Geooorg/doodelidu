@@ -4,7 +4,6 @@ package de.gs;
 import de.gs.card.Card;
 import de.gs.card.Color;
 import de.gs.card.Symbol;
-import de.gs.state.GameState;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,11 +17,11 @@ public class GameController {
     private final GameContext context;
 
     @Getter
-    private GameState currentState;
+    private State currentState;
 
     public GameController(GameContext context) {
         this.context = context;
-        this.currentState = GameState.INIT;
+        this.currentState = State.INIT;
     }
 
     public void nextState() {
@@ -33,13 +32,13 @@ public class GameController {
                 log.info("Generating cards");
                 var cards = generateRandomCardDeck(NUMBER_OF_CARDS);
                 context.setCards(cards);
-                currentState = GameState.DISTRIBUTE_CARDS;
+                currentState = State.DISTRIBUTE_CARDS;
                 break;
 
             case DISTRIBUTE_CARDS:
                 log.info("Distributing cards");
                 distributeCards();
-                currentState = GameState.NEXT_PLAYER;
+                currentState = State.NEXT_PLAYER;
                 break;
 
             case NEXT_PLAYER:
@@ -48,12 +47,12 @@ public class GameController {
 
                 log.info("Player {} - {} cards left", nextPlayer.name(), nextPlayer.cards().size());
                 playCard();
-                currentState = GameState.EVALUATE;
+                currentState = State.EVALUATE;
                 break;
 
             case EVALUATE:
                 evaluateTurn();
-                currentState = anyPlayerHasCardsLeft() ? GameState.NEXT_PLAYER : GameState.END;
+                currentState = anyPlayerHasCardsLeft() ? State.NEXT_PLAYER : State.END;
                 break;
 
             case END:
@@ -68,6 +67,7 @@ public class GameController {
     private void playCard() {
         var player = context.getCurrentPlayer();
         var card = player.cards().pop();
+        context.getPlayedCards().remove(player);
         context.getPlayedCards().put(player, card);
         log.info("Player {} played card {}", player.name(), card);
     }
@@ -94,8 +94,11 @@ public class GameController {
 
     private void evaluateTurn() {
         log.info("Evaluating turn");
-        var cardsOnTable = context.getPlayedCards().values();
+        var cardsOnTable = context.getPlayedCards();
+        var evaluator = new CardEvaluator();
+        var result = evaluator.evaluatePlayedCards(cardsOnTable, context.getPlayers().size());
 
+        log.info("What to say: {}", result.whatToSay());
     }
 
     private Stack<Card> generateRandomCardDeck(int numberOfCards) {

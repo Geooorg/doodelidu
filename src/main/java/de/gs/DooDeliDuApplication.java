@@ -1,6 +1,5 @@
 package de.gs;
 
-import de.gs.state.GameState;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class DooDeliDuApplication {
         var controller = new GameController(context);
         log.info("Game will begin...");
 
-        while (controller.getCurrentState() != GameState.END) {
+        while (controller.getCurrentState() != State.END) {
             log.debug("Current state" + controller.getCurrentState());
             controller.nextState();
         }
