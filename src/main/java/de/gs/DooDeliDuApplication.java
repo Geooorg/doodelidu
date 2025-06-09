@@ -1,6 +1,11 @@
 package de.gs;
 
+import de.gs.state.GameState;
+import de.gs.state.StateMachine;
+import de.gs.state.StateMachineFactory;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Slf4j
 public class DooDeliDuApplication {
@@ -16,13 +21,21 @@ public class DooDeliDuApplication {
 
     public GameContext startGame() {
         this.context = new GameContext();
+
+        var playerA = new Player("A");
+        var playerB = new Player("B");
+        var playerC = new Player("C");
+        context.setPlayers(List.of(playerA, playerB, playerC));
+        context.setCurrentPlayer(playerA);
+
         this.stateMachine = StateMachineFactory.create(context);
+
+        log.info("Spiel gestartet.");
 
         while (stateMachine.getCurrentState() != GameState.END) {
             log.info("Aktueller Zustand: " + stateMachine.getCurrentState());
 
-            context.round++;
-            context.playerMadeMistake = context.round == 10;
+            context.incrementRound();
 
             if (!stateMachine.next()) {
                 log.info("Kein gültiger Übergang möglich");
@@ -30,7 +43,7 @@ public class DooDeliDuApplication {
             }
         }
 
-        log.info("Spiel beendet nach " + context.round + " Runden.");
+        log.info("Spiel beendet nach " + context.getRound() + " Runden.");
         return context;
     }
 

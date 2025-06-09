@@ -1,5 +1,6 @@
-package de.gs;
+package de.gs.state;
 
+import de.gs.GameContext;
 import lombok.Getter;
 
 import java.util.function.Predicate;

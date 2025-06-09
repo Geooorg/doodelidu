@@ -1,13 +1,16 @@
-package de.gs;
+package de.gs.state;
+
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public enum GameState {
     INIT,
-    NEXT,
     DEAL_CARDS,
-    PLAYER_TURN,
+    NEXT_PLAYER,
+    NEXT_ROUND,
     EVALUATE,
     END;
 
@@ -15,10 +18,6 @@ public enum GameState {
 
     public void addTransition(Transition transition) {
         transitions.add(transition);
-    }
-
-    public List<Transition> getTransitions() {
-        return transitions;
     }
 
     public String getName() {
