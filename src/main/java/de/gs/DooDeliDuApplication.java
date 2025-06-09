@@ -1,17 +1,15 @@
 package de.gs;
 
 import de.gs.state.GameState;
-import de.gs.state.StateMachine;
-import de.gs.state.StateMachineFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Stack;
 
 @Slf4j
 public class DooDeliDuApplication {
 
     private GameContext context;
-    private StateMachine stateMachine;
 
     public static void main(String[] args) {
 
@@ -19,33 +17,26 @@ public class DooDeliDuApplication {
         application.startGame();
     }
 
-    public GameContext startGame() {
-        this.context = new GameContext();
+    public void startGame() {
 
-        var playerA = new Player("A");
-        var playerB = new Player("B");
-        var playerC = new Player("C");
-        context.setPlayers(new PlayersRing(List.of(playerA, playerB, playerC)));
+        var playerA = new Player("A", new Stack<>());
+        var playerB = new Player("B", new Stack<>());
+        var playerC = new Player("C", new Stack<>());
+
+        this.context = new GameContext(new PlayersRing(List.of(playerA, playerB, playerC)));
         context.setCurrentPlayer(playerA);
 
-        this.stateMachine = StateMachineFactory.create(context);
+        var controller = new GameController(context);
+        log.info("Game will begin...");
 
-        log.info("Spiel gestartet.");
-
-        while (stateMachine.getCurrentState() != GameState.END) {
-            log.info("Aktueller Zustand: " + stateMachine.getCurrentState());
-
-            context.incrementRound();
-
-            if (!stateMachine.next()) {
-                log.info("Kein gültiger Übergang möglich - ENDE");
-                stateMachine.setCurrentState(GameState.END);
-                break;
-            }
+        while (controller.getCurrentState() != GameState.END) {
+            log.debug("Current state" + controller.getCurrentState());
+            controller.nextState();
         }
 
-        log.info("Spiel beendet nach " + context.getRound() + " Runden.");
-        return context;
+        log.info("Game ended");
+        controller.nextState();
+
     }
 
 

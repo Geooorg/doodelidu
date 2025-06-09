@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 public enum GameState {
     INIT,
-    DEAL_CARDS,
+    DISTRIBUTE_CARDS,
     NEXT_PLAYER,
     NEXT_ROUND,
     EVALUATE,
