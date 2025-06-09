@@ -2,9 +2,10 @@ package de.gs.state;
 
 import de.gs.GameContext;
 import lombok.Getter;
+import lombok.Setter;
 
 public class StateMachine {
-    @Getter
+    @Getter @Setter
     private GameState currentState;
     private final GameContext context;
 

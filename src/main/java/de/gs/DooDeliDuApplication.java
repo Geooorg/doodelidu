@@ -25,7 +25,7 @@ public class DooDeliDuApplication {
         var playerA = new Player("A");
         var playerB = new Player("B");
         var playerC = new Player("C");
-        context.setPlayers(List.of(playerA, playerB, playerC));
+        context.setPlayers(new PlayersRing(List.of(playerA, playerB, playerC)));
         context.setCurrentPlayer(playerA);
 
         this.stateMachine = StateMachineFactory.create(context);
@@ -38,7 +38,8 @@ public class DooDeliDuApplication {
             context.incrementRound();
 
             if (!stateMachine.next()) {
-                log.info("Kein gültiger Übergang möglich");
+                log.info("Kein gültiger Übergang möglich - ENDE");
+                stateMachine.setCurrentState(GameState.END);
                 break;
             }
         }
@@ -46,5 +47,6 @@ public class DooDeliDuApplication {
         log.info("Spiel beendet nach " + context.getRound() + " Runden.");
         return context;
     }
+
 
 }
